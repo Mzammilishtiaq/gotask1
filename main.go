@@ -113,7 +113,7 @@ func ConsientCount(s string, ch chan int) {
 	ch <- word
 }
 
-func combinefunction(s string,ch chan int) {
+func combinefunction(s string, ch chan int) {
 	word := 0
 
 	for i := 0; i < len(s); i++ {
@@ -188,12 +188,12 @@ func main() {
 	go SpecialCharacterCount(str, totalSpecialCharacterChannel)
 
 	// channel create in digit count
-	digitcontchannel:=make(chan int)
-	go DigitsCount(str,digitcontchannel)
+	digitcontchannel := make(chan int)
+	go DigitsCount(str, digitcontchannel)
 
 	//channel create in combine function
-	totalcombinechannel:=make(chan int)
-	go combinefunction(str,totalcombinechannel)
+	totalcombinechannel := make(chan int)
+	go combinefunction(str, totalcombinechannel)
 
 	// goroutines
 	totalWords := <-wordCountChannel
@@ -204,7 +204,6 @@ func main() {
 	totalSpecialCharacterCount := <-totalSpecialCharacterChannel
 	totalDigitCount := <-digitcontchannel
 	totalCombinefunction := <-totalcombinechannel
-
 
 	fmt.Println("Total words in file:", totalWords)
 	fmt.Println("Total line in file:", totallines)
