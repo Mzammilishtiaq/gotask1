@@ -114,43 +114,53 @@ func ConsientCount(s string, ch chan int) {
 }
 
 func combinefunction(s string, ch chan int) {
-	word := 0
+	Punctcation := 0
+	spaces := 0
+	words := 0
+	line := 0
+	vowels := 0
+	digits := 0
+	ConsientCount := 0
+	SpecialCharacter := 0
 
 	for i := 0; i < len(s); i++ {
-		if s[i] == ' ' || s[i] == '\n' || s[i] == '.' ||
-			s[i] == '?' || s[i] == '!' || s[i] == ',' ||
-			s[i] == ';' || s[i] == ':' || s[i] == '"' ||
-			s[i] == '\'' || s[i] == '(' || s[i] == ')' ||
-			s[i] == '[' || s[i] == ']' || s[i] == '{' ||
-			s[i] == '}' || s[i] == '<' || s[i] == '>' ||
-			s[i] == '/' || s[i] == '\\' || s[i] == '^' ||
-			s[i] == '_' || s[i] == '=' || s[i] == '|' ||
-			s[i] == '`' || s[i] == '~' || s[i] == 'a' ||
-			s[i] == 'e' || s[i] == 'i' ||
-			s[i] == 'o' || s[i] == 'u' || s[i] == 'A' ||
-			s[i] == 'E' || s[i] == 'I' || s[i] == 'O' ||
-			s[i] == 'U' || s[i] == '\n' || s[i] == '\t' ||
-			s[i] == '\r' || s[i] == '\f' || s[i] == '@' ||
-			s[i] == '#' ||
-			s[i] == '$' || s[i] == '%' || s[i] == '^' ||
-			s[i] == '&' || s[i] == '*' || s[i] == '+' ||
-			s[i] == '-' || s[i] == '0' || s[i] == '1' || s[i] == '2' ||
-			s[i] == '3' || s[i] == '4' || s[i] == '5' ||
-			s[i] == '6' || s[i] == '7' || s[i] == '8' ||
-			s[i] == '9' || s[i] == 'b' || s[i] == 'c' ||
-			s[i] == 'd' || s[i] == 'f' ||
-			s[i] == 'g' || s[i] == 'h' ||
-			s[i] == 'j' || s[i] == 'k' ||
-			s[i] == 'l' || s[i] == 'm' ||
-			s[i] == 'n' || s[i] == 'p' ||
-			s[i] == 'q' || s[i] == 'r' ||
-			s[i] == 's' || s[i] == 'v' ||
-			s[i] == 'w' || s[i] == 'x' ||
-			s[i] == 'y' || s[i] == 'z' {
-			word++
+		if s[i] == ' ' {
+			ch <- words
+		}
+		if s[i] == '\n' {
+			line++
+		}
+		if s[i] == '	' {
+			ch <- spaces
+		}
+		switch s[i] {
+		case 'a', 'e', 'i', 'o', 'u':
+			ch <- vowels
+		}
+		switch s[i] {
+		case '.', ',', '\'',
+			'(', ')', '!', '?',
+			';', ':', '-', '"':
+			ch <- Punctcation
+		}
+		switch s[i] {
+		case '0', '1', '2', '3',
+			'4', '5', '6', '7', '8',
+			'9':
+			ch <- digits
+		}
+		if s[i] != 'a' && s[i] != 'e' &&
+			s[i] != 'i' && s[i] != 'o' &&
+			s[i] != 'u' {
+			ch <- ConsientCount
+		}
+		if !(s[i] >= 'a' && s[i] <= 'z') &&
+			!(s[i] >= 'A' && s[i] <= 'Z') &&
+			!(s[i] >= '0' && s[i] <= '9') &&
+			s[i] != ' ' {
+			ch <- SpecialCharacter
 		}
 	}
-	ch <- word
 }
 
 func main() {
