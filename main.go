@@ -3,30 +3,31 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 // WordCount counts the number of words in a string.
-func WordCount(s string) int {
+func WordCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == ' ' {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func LineCount(s string) int {
+func LineCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == '\n' {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func PunctcationCount(s string) int {
+func PunctcationCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == '.' || s[i] == '?' || s[i] == '!' || s[i] == ',' ||
@@ -41,10 +42,10 @@ func PunctcationCount(s string) int {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func VowelCount(s string) int {
+func VowelCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == 'a' || s[i] == 'e' || s[i] == 'i' ||
@@ -54,20 +55,20 @@ func VowelCount(s string) int {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func ParaCount(s string) int {
+func ParaCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == '\n' || s[i] == '\t' || s[i] == '\r' || s[i] == '\f' || s[i] == ' ' {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func SpecialCharacterCount(s string) int {
+func SpecialCharacterCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == '@' || s[i] == '#' ||
@@ -77,10 +78,10 @@ func SpecialCharacterCount(s string) int {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func DigitsCount(s string) int {
+func DigitsCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == '0' || s[i] == '1' || s[i] == '2' ||
@@ -90,10 +91,10 @@ func DigitsCount(s string) int {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func ConsientCount(s string) int {
+func ConsientCount(s string, ch chan int) {
 	word := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == 'b' || s[i] == 'c' ||
@@ -109,11 +110,12 @@ func ConsientCount(s string) int {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
-func combinefunction(s string) int {
+func combinefunction(s string,ch chan int) {
 	word := 0
+
 	for i := 0; i < len(s); i++ {
 		if s[i] == ' ' || s[i] == '\n' || s[i] == '.' ||
 			s[i] == '?' || s[i] == '!' || s[i] == ',' ||
@@ -148,10 +150,11 @@ func combinefunction(s string) int {
 			word++
 		}
 	}
-	return word
+	ch <- word
 }
 
 func main() {
+	start := time.Now()
 	fmt.Println("Hello, World!")
 	filename, err := os.ReadFile("text_file.txt")
 	if err != nil {
@@ -160,14 +163,49 @@ func main() {
 	}
 
 	str := string(filename)
-	totalWords := WordCount(str)
-	totallines := LineCount(str)
-	TotalPunctcationCount := PunctcationCount(str)
-	totalVowel := VowelCount(str)
-	totalParagraph := ParaCount(str)
-	totalSpecialCharacterCount := SpecialCharacterCount(str)
-	totalDigitCount := DigitsCount(str)
-	totalCombinefunction := combinefunction(str)
+	// channel create in word count
+	wordCountChannel := make(chan int)
+	go WordCount(str, wordCountChannel)
+
+	// channel create in line count
+	LinecountChannel := make(chan int)
+	go LineCount(str, LinecountChannel)
+
+	// channel create in punctcation count
+	PunctcationCountChannel := make(chan int)
+	go PunctcationCount(str, PunctcationCountChannel)
+
+	// channel create in vowel count
+	totalvowelChannel := make(chan int)
+	go VowelCount(str, totalvowelChannel)
+
+	// channel create in vowel count
+	totalparaChannel := make(chan int)
+	go ParaCount(str, totalparaChannel)
+
+	// channel create in vowel count
+	totalSpecialCharacterChannel := make(chan int)
+	go SpecialCharacterCount(str, totalSpecialCharacterChannel)
+
+	// channel create in digit count
+	digitcontchannel:=make(chan int)
+	go DigitsCount(str,digitcontchannel)
+
+	//channel create in combine function
+	totalcombinechannel:=make(chan int)
+	go combinefunction(str,totalcombinechannel)
+
+	// goroutines
+	totalWords := <-wordCountChannel
+	totallines := <-LinecountChannel
+	TotalPunctcationCount := <-PunctcationCountChannel
+	totalVowel := <-totalvowelChannel
+	totalParagraph := <-totalparaChannel
+	totalSpecialCharacterCount := <-totalSpecialCharacterChannel
+	totalDigitCount := <-digitcontchannel
+	totalCombinefunction := <-totalcombinechannel
+
+
 	fmt.Println("Total words in file:", totalWords)
 	fmt.Println("Total line in file:", totallines)
 	fmt.Println("Total PunctcationCount in file:", TotalPunctcationCount)
@@ -176,4 +214,7 @@ func main() {
 	fmt.Println("Total SpecialCharacterCount in file:", totalSpecialCharacterCount)
 	fmt.Println("Total DigitCount in file:", totalDigitCount)
 	fmt.Println("Combine function:", totalCombinefunction)
+
+	elapse := time.Since(start)
+	fmt.Printf("Total time : %s", elapse)
 }
