@@ -59,7 +59,7 @@ func combinefunction(s string) (int, int, int, int, int, int, int, int) {
 	return words, line, spaces, punctcation, vowels, digits, ConsientCount, SpecialCharacter
 }
 
-func mainTask1() {
+func main() {
 	combinestarttime := time.Now()
 	filename, err := os.ReadFile("text_file.txt")
 	if err != nil {

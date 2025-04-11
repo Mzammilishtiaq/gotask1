@@ -1,11 +1,11 @@
-package main
+package routes
 
 import (
 	"github.com/Mzammilishtiaq/gotask1/controller"
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
+func Routes(router *gin.Engine) {
 	r := gin.Default()
 	controller := controller.NoteController{}
 	controller.InitNoteControllerRoutes(r)
